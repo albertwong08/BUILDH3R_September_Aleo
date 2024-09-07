@@ -14,6 +14,14 @@ program auction.aleo {
         is_winner: bool,
     }
 
+    // A Prize for the auction
+    // - `owner`    : the address of the accont which owns the record associated with this Prize
+    // - `amount`   : the amount of the prize
+    record Prize{
+        owner: address,
+        amount: u64,
+    }
+
     // Returns a new bid.
     // - `bidder` : The address of the account that placed the bid.
     // - `amount` : The amount of the bid.
@@ -62,6 +70,22 @@ program auction.aleo {
             bidder: bid.bidder,
             amount: bid.amount,
             is_winner: true,
+        };
+    }
+
+    // Returns the Prize to the winning bidder
+    // - `bid` : the bidder who claim the winning prize.
+    // Requires that the function caller is the bidder.
+    // returns the Prize if the bidder is the winner (is_winner = True)
+    // Assumes that the function is invoked only after all bids have been resolved and finished
+    transition claim(bid: Bid) -> Prize {
+        // Ensure the caller is the bidder.
+        assert_eq(self.caller, bid.bidder);
+        // Ensure the bidder is the winner in order to proceed.
+        assert_eq(bid.is_winner, true);
+        return Prize {
+            owner: bid.bidder,
+            amount: bid.amount
         };
     }
 }

@@ -44,8 +44,9 @@ Let's take the role of the first bidder - we'll swap in the private key and addr
 We're going to run the transition function "place_bid", slotting in the first bidder's public address and the amount that is being bid. The inputs are the user's public address and the amount being bid.
 
 echo '
-NETWORK=testnet3
+NETWORK=testnet
 PRIVATE_KEY=APrivateKey1zkpG9Af9z5Ha4ejVyMCqVFXRKknSm8L1ELEwcc4htk9YhVK
+ENDPOINT=https://api.explorer.aleo.org/v1
 ' > .env
 
 leo run place_bid aleo1yzlta2q5h8t0fqe0v6dyh9mtv4aggd53fgzr068jvplqhvqsnvzq7pj2ke 10u64
@@ -53,8 +54,9 @@ leo run place_bid aleo1yzlta2q5h8t0fqe0v6dyh9mtv4aggd53fgzr068jvplqhvqsnvzq7pj2k
 
 # Swap in the private key of the first bidder to .env.
 echo "
-NETWORK=testnet3
+NETWORK=testnet
 PRIVATE_KEY=APrivateKey1zkpG9Af9z5Ha4ejVyMCqVFXRKknSm8L1ELEwcc4htk9YhVK
+ENDPOINT=https://api.explorer.aleo.org/v1
 " > .env
 
 # Have the first bidder place a bid of 10.
@@ -78,8 +80,9 @@ echo "
 Now we're going to place another bid as the second bidder, so let's switch our keys to the second bidder and run the same transition function, this time with the second bidder's keys, public address, and different amount.
 
 echo '
-NETWORK=testnet3
+NETWORK=testnet
 PRIVATE_KEY=APrivateKey1zkpAFshdsj2EqQzXh5zHceDapFWVCwR6wMCJFfkLYRKupug
+ENDPOINT=https://api.explorer.aleo.org/v1
 ' > .env
 
 leo run place_bid aleo1esqchvevwn7n5p84e735w4dtwt2hdtu4dpguwgwy94tsxm2p7qpqmlrta4 90u64
@@ -87,8 +90,9 @@ leo run place_bid aleo1esqchvevwn7n5p84e735w4dtwt2hdtu4dpguwgwy94tsxm2p7qpqmlrta
 
 # Swap in the private key of the second bidder to .env.
 echo "
-NETWORK=testnet3
+NETWORK=testnet
 PRIVATE_KEY=APrivateKey1zkpAFshdsj2EqQzXh5zHceDapFWVCwR6wMCJFfkLYRKupug
+ENDPOINT=https://api.explorer.aleo.org/v1
 " > .env
 
 # Have the second bidder place a bid of 90.
@@ -112,8 +116,9 @@ echo "
 Now, let's take the role of the auctioneer, so we can determine which bid wins. Let's swap our keys to the auctioneer and run the resolve command on the output of the two bids from before. The resolve command takes the two output records from the bids as inputs and compares them to determine which bid wins.
 
 echo '
-NETWORK=testnet3
+NETWORK=testnet
 PRIVATE_KEY=APrivateKey1zkp5wvamYgK3WCAdpBQxZqQX8XnuN2u11Y6QprZTriVwZVc
+ENDPOINT=https://api.explorer.aleo.org/v1
 ' > .env
 
 leo run resolve '{
@@ -133,8 +138,9 @@ leo run resolve '{
 
 # Swaps in the private key of the auctioneer to .env.
 echo "
-NETWORK=testnet3
+NETWORK=testnet
 PRIVATE_KEY=APrivateKey1zkp5wvamYgK3WCAdpBQxZqQX8XnuN2u11Y6QprZTriVwZVc
+ENDPOINT=https://api.explorer.aleo.org/v1
 " > .env
 
 # Have the auctioneer select the winning bid.
@@ -200,3 +206,38 @@ echo "
 ########                                                               ########
 ###############################################################################
 "
+
+echo "
+Now the winner of the auction claim the prize by calling the claim function
+
+echo '
+NETWORK=testnet
+PRIVATE_KEY=APrivateKey1zkpAFshdsj2EqQzXh5zHceDapFWVCwR6wMCJFfkLYRKupug
+ENDPOINT=https://api.explorer.aleo.org/v1
+' > .env
+
+leo run claim '{
+  owner: aleo1esqchvevwn7n5p84e735w4dtwt2hdtu4dpguwgwy94tsxm2p7qpqmlrta4.private,
+  bidder: aleo1esqchvevwn7n5p84e735w4dtwt2hdtu4dpguwgwy94tsxm2p7qpqmlrta4.private,
+  amount: 90u64.private,
+  is_winner: true.private,
+  _nonce: 7573244271940346536709018458853474245119919582927608120413998323842596297523group.public
+}'
+
+"
+
+# Swap in the private key of the second bidder to .env.
+echo "
+NETWORK=testnet
+PRIVATE_KEY=APrivateKey1zkpAFshdsj2EqQzXh5zHceDapFWVCwR6wMCJFfkLYRKupug
+ENDPOINT=https://api.explorer.aleo.org/v1
+" > .env
+
+# Have the second bidder place a bid of 90.
+leo run claim "{
+  owner: aleo1esqchvevwn7n5p84e735w4dtwt2hdtu4dpguwgwy94tsxm2p7qpqmlrta4.private,
+  bidder: aleo1esqchvevwn7n5p84e735w4dtwt2hdtu4dpguwgwy94tsxm2p7qpqmlrta4.private,
+  amount: 90u64.private,
+  is_winner: true.private,
+  _nonce: 7573244271940346536709018458853474245119919582927608120413998323842596297523group.public
+}"
